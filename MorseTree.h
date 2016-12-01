@@ -4,10 +4,11 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
+#include "Binary_Tree.h"
 
 using namespace std;
 
-class MorseTree
+class MorseTree :public Binary_Tree<string>
 {
 public:
 	MorseTree(ifstream& morse_in) 

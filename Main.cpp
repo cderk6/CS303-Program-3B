@@ -13,7 +13,7 @@ int main()
 	try
 	{
 		cout << "_.. __. decoded = " << m.decode("_.. __.") << endl;
-		cout << "ac encoded = " << m.encode("ac") << endl;
+		cout << "ac = " << m.encode("ac") << endl;
 	}
 	catch (const logic_error e)
 	{
