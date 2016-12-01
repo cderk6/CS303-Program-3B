@@ -8,19 +8,39 @@
 
 using namespace std;
 
-class MorseTree :public Binary_Tree<string>
+class MorseTree : public Binary_Tree<char>
 {
 public:
 	MorseTree(ifstream& morse_in) 
 	{ 
+		root = new BTNode<char>(NULL);
 		char letter;
 		string code;
 
 		while (morse_in >> letter)
 		{
 			morse_in >> code;
-			decode_map[code] = letter;
+			//decode_map[code] = letter;
 			encode_map[letter] = code;
+			stringstream code_in(code);
+			char curr_code;
+			BTNode<char>* local_root = root;
+			while (code_in >> curr_code)
+			{
+				if (curr_code == '.')	//left
+				{
+					if (local_root->left == nullptr)
+						local_root->left = new BTNode<char>(NULL);
+					local_root = local_root->left;
+				}
+				else if (curr_code == '_')	//right
+				{
+					if (local_root->right == nullptr)
+						local_root->right = new BTNode<char>(NULL);
+					local_root = local_root->right;
+				}
+			}
+			local_root->data = letter;
 		}
 	}
 	
@@ -28,7 +48,7 @@ public:
 	string decode(const string& code);
 
 private:
-	map<string, char> decode_map;
+	//map<string, char> decode_map;
 	map<char, string> encode_map;
 
 };
@@ -53,15 +73,37 @@ string MorseTree::encode(const string& msg)
 string MorseTree::decode(const string& code)
 {
 	stringstream code_in(code);
-	string code_seg;
+	string temp;
 	string msg;
+	char curr_code;
+	BTNode<char>* local_root = root;
 
-	while (code_in >> code_seg)
+	while (code_in >> temp)
 	{
-		map<string, char>::iterator itr = decode_map.find(code_seg);
-		if (itr == decode_map.end())
-			throw logic_error("Invalid code: Code segment not found in Morse Tree.");
-		msg += itr->second;
+		stringstream code_seg(temp);
+		while (code_seg >> curr_code)
+		{
+			if (curr_code == '.')
+			{
+				if (local_root->left == nullptr)
+					throw logic_error("Invalid code: Code segment not found in Morse Tree.");
+				local_root = local_root->left;
+			}
+			else if (curr_code == '_')
+			{
+				if (local_root->right == nullptr)
+					throw logic_error("Invalid code: Code segment not found in Morse Tree.");
+				local_root = local_root->right;
+			}
+			else
+			{
+				string inv;
+				inv.push_back(curr_code);
+				throw logic_error("Invalid character: '" + inv + "'.");
+			}
+		}
+		msg += local_root->data;
+		local_root = root;
 	}
 	return msg;
 }
