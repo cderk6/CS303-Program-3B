@@ -11,20 +11,25 @@ using namespace std;
 class MorseTree : public Binary_Tree<char>
 {
 public:
+	//constructor that reads in all characters to correct position in binary tree
 	MorseTree(ifstream& morse_in) 
 	{ 
+		//set root to avoid error
 		root = new BTNode<char>(NULL);
 		char letter;
 		string code;
 
+		//while there are more letter to read into tree
 		while (morse_in >> letter)
 		{
+			//read in the code corresponding to the letter
 			morse_in >> code;
-			//decode_map[code] = letter;
-			encode_map[letter] = code;
+			encode_map[letter] = code; //building encoding map
+
 			stringstream code_in(code);
 			char curr_code;
 			BTNode<char>* local_root = root;
+			//while there are more characters in the code string, traverse tree
 			while (code_in >> curr_code)
 			{
 				if (curr_code == '.')	//left
@@ -40,6 +45,7 @@ public:
 					local_root = local_root->right;
 				}
 			}
+			//put letter into position traversed to in binary tree
 			local_root->data = letter;
 		}
 	}
@@ -48,9 +54,7 @@ public:
 	string decode(const string& code);
 
 private:
-	//map<string, char> decode_map;
 	map<char, string> encode_map;
-
 };
 
 string MorseTree::encode(const string& msg)
@@ -59,6 +63,7 @@ string MorseTree::encode(const string& msg)
 	char letter;
 	string code;
 
+	//while there are more letters, add code of letter and space character to return code
 	while (msg_in >> letter)
 	{
 		map<char, string>::iterator itr = encode_map.find(letter);
@@ -73,14 +78,16 @@ string MorseTree::encode(const string& msg)
 string MorseTree::decode(const string& code)
 {
 	stringstream code_in(code);
-	string temp;
+	string coded_letter;
 	string msg;
 	char curr_code;
 	BTNode<char>* local_root = root;
 
-	while (code_in >> temp)
+	//read in first coded letter
+	while (code_in >> coded_letter)
 	{
-		stringstream code_seg(temp);
+		stringstream code_seg(coded_letter);
+		//traverse tree: left for '.' right for '_'
 		while (code_seg >> curr_code)
 		{
 			if (curr_code == '.')
@@ -95,6 +102,7 @@ string MorseTree::decode(const string& code)
 					throw logic_error("Invalid code: Code segment not found in Morse Tree.");
 				local_root = local_root->right;
 			}
+			//catch invalid characters (those that are not '.' or '_')
 			else
 			{
 				string inv;
@@ -102,7 +110,9 @@ string MorseTree::decode(const string& code)
 				throw logic_error("Invalid character: '" + inv + "'.");
 			}
 		}
+		//when coded letter has been found, add it to the return string
 		msg += local_root->data;
+		//reset local_root to start of binary tree
 		local_root = root;
 	}
 	return msg;

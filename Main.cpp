@@ -8,12 +8,12 @@ int main()
 {
 	ifstream morse_in("morse.txt");
 
-	MorseTree m(morse_in);
+	MorseTree morse_tree(morse_in);
 
 	try
 	{
-		cout << "_.. __. decoded = " << m.decode("_.. __.") << endl;
-		cout << "ac = " << m.encode("ac") << endl;
+		cout << "_.. __. decoded = " << morse_tree.decode("_.. __.") << endl;
+		cout << "ac = " << morse_tree.encode("ac") << endl;
 	}
 	catch (const logic_error e)
 	{
